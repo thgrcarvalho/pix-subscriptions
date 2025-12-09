@@ -2,6 +2,7 @@ package app.pixsub.backend.plan.application;
 
 import app.pixsub.backend.plan.domain.Plan;
 import app.pixsub.backend.plan.domain.PlanRepository;
+import app.pixsub.backend.shared.ResourceNotFoundException;
 import app.pixsub.backend.trainer.domain.TrainerRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class CreatePlanService {
     public Plan create(Long trainerId, String name, long amountInCents, int intervalDays) {
         // Ensure trainer exists
         trainerRepository.findById(trainerId)
-                .orElseThrow(() -> new IllegalArgumentException("Trainer not found: " + trainerId));
+                .orElseThrow(() -> new ResourceNotFoundException("Trainer", trainerId));
 
         Plan plan = Plan.newPlan(trainerId, name, amountInCents, intervalDays);
         return planRepository.save(plan);

@@ -4,6 +4,8 @@ import app.pixsub.backend.payment.domain.Payment;
 import app.pixsub.backend.payment.domain.PaymentRepository;
 import app.pixsub.backend.plan.domain.Plan;
 import app.pixsub.backend.plan.domain.PlanRepository;
+import app.pixsub.backend.shared.ResourceNotFoundException;
+import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.student.domain.Student;
 import app.pixsub.backend.student.domain.StudentRepository;
 import app.pixsub.backend.subscription.domain.Subscription;
@@ -33,14 +35,14 @@ public class CreateSubscriptionService {
     @Transactional
     public Subscription create(Long studentId, Long planId) {
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new IllegalArgumentException("Student not found: " + studentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Student", studentId));
 
         Plan plan = planRepository.findById(planId)
-                .orElseThrow(() -> new IllegalArgumentException("Plan not found: " + planId));
+                .orElseThrow(() -> new ResourceNotFoundException("Plan", planId));
 
         // Invariant: student and plan must belong to same trainer
         if (!student.getTrainerId().equals(plan.getTrainerId())) {
-            throw new IllegalArgumentException("Student and Plan must belong to the same trainer");
+            throw new DomainValidationException("Student and Plan must belong to the same trainer");
         }
 
         LocalDate today = LocalDate.now();

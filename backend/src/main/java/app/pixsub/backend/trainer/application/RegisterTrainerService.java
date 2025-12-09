@@ -1,5 +1,6 @@
 package app.pixsub.backend.trainer.application;
 
+import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.trainer.domain.Trainer;
 import app.pixsub.backend.trainer.domain.TrainerRepository;
 import jakarta.transaction.Transactional;
@@ -18,7 +19,7 @@ public class RegisterTrainerService {
     @Transactional
     public Trainer register(String email, String rawPassword, String name, String pixKey) {
         if (trainerRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already in use");
+            throw new DomainValidationException("Email already in use");
         }
 
         String hash = encoder.encode(rawPassword);
