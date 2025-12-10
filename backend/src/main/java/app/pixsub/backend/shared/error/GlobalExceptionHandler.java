@@ -2,8 +2,10 @@ package app.pixsub.backend.shared.error;
 
 import app.pixsub.backend.shared.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,6 +50,32 @@ public class GlobalExceptionHandler {
                                                            HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY; // 422, or BAD_REQUEST if you prefer
         ApiError body = new ApiError(status, ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                 HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST; // 400
+
+        String message = ex.getBindingResult()
+                .getAllErrors()
+                .stream()
+                .map(error -> {
+                    // FieldError has a field name; ObjectError does not.
+                    if (error instanceof org.springframework.validation.FieldError fieldError) {
+                        return fieldError.getField() + ": " + fieldError.getDefaultMessage();
+                    } else {
+                        return error.getObjectName() + ": " + error.getDefaultMessage();
+                    }
+                })
+                .collect(java.util.stream.Collectors.joining("; "));
+
+        if (message.isBlank()) {
+            message = "Validation failed";
+        }
+
+        ApiError body = new ApiError(status, message, request.getRequestURI());
         return ResponseEntity.status(status).body(body);
     }
 

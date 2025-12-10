@@ -4,17 +4,16 @@ import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.trainer.domain.Trainer;
 import app.pixsub.backend.trainer.domain.TrainerRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RegisterTrainerService {
-    private final TrainerRepository trainerRepository;
-    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public RegisterTrainerService(TrainerRepository trainerRepository) {
-        this.trainerRepository = trainerRepository;
-    }
+    private final TrainerRepository trainerRepository;
+    private final PasswordEncoder encoder;   // no new BCryptPasswordEncoder() here
 
     @Transactional
     public Trainer register(String email, String rawPassword, String name, String pixKey) {
