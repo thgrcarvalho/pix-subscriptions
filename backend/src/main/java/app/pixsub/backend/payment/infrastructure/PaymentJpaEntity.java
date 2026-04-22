@@ -30,6 +30,9 @@ public class PaymentJpaEntity {
     @Column(nullable = false)
     private PaymentStatus status;
 
+    @Column(name = "pix_provider")
+    private String pixProvider;
+
     @Column(name = "pix_qr_code")
     private String pixQrCode;
 
@@ -56,6 +59,7 @@ public class PaymentJpaEntity {
         e.dueDate = p.getDueDate();
         e.paidDate = p.getPaidDate();
         e.status = p.getStatus();
+        e.pixProvider = p.getPixProvider();
         e.pixQrCode = p.getPixQrCode();
         e.pixCopyPaste = p.getPixCopyPaste();
         e.pixProviderPaymentId = p.getPixProviderPaymentId();
@@ -72,6 +76,7 @@ public class PaymentJpaEntity {
                 dueDate,
                 paidDate,
                 status,
+                pixProvider,
                 pixQrCode,
                 pixCopyPaste,
                 pixProviderPaymentId,

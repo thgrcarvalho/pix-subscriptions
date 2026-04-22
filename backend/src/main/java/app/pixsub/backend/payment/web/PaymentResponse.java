@@ -14,9 +14,12 @@ public class PaymentResponse {
     private LocalDate dueDate;
     private Instant paidDate;
     private PaymentStatus status;
+
+    private String pixProvider; // NEW
     private String pixQrCode;
     private String pixCopyPaste;
     private String pixProviderPaymentId;
+
     private Instant createdAt;
 
     public PaymentResponse(Long id,
@@ -25,6 +28,7 @@ public class PaymentResponse {
                            LocalDate dueDate,
                            Instant paidDate,
                            PaymentStatus status,
+                           String pixProvider, // NEW
                            String pixQrCode,
                            String pixCopyPaste,
                            String pixProviderPaymentId,
@@ -35,6 +39,7 @@ public class PaymentResponse {
         this.dueDate = dueDate;
         this.paidDate = paidDate;
         this.status = status;
+        this.pixProvider = pixProvider;
         this.pixQrCode = pixQrCode;
         this.pixCopyPaste = pixCopyPaste;
         this.pixProviderPaymentId = pixProviderPaymentId;

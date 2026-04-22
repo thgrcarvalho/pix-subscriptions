@@ -41,6 +41,7 @@ public class PaymentController {
                 p.getDueDate(),
                 p.getPaidDate(),
                 p.getStatus(),
+                p.getPixProvider(),
                 p.getPixQrCode(),
                 p.getPixCopyPaste(),
                 p.getPixProviderPaymentId(),
