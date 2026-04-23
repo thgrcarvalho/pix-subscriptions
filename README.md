@@ -92,18 +92,23 @@ Subscriptions track `nextPaymentDate` so a future scheduler knows which ones to 
 
 ## API
 
+All endpoints except `/api/auth/login` and `/api/trainers/register` require a `Bearer` token in the `Authorization` header.
+
 | Method | Path | What it does |
 |--------|------|-------------|
+| `POST` | `/api/auth/login` | Login, returns a JWT |
 | `POST` | `/api/trainers/register` | Register a new trainer |
 | `POST` | `/api/trainers/{id}/students` | Enroll a student |
-| `GET`  | `/api/trainers/{id}/students` | List trainer's students |
+| `GET`  | `/api/trainers/{id}/students` | List trainer's students (paginated) |
 | `POST` | `/api/trainers/{id}/plans` | Create a billing plan |
-| `GET`  | `/api/trainers/{id}/plans` | List trainer's plans |
+| `GET`  | `/api/trainers/{id}/plans` | List trainer's plans (paginated) |
 | `POST` | `/api/students/{id}/subscriptions` | Subscribe a student to a plan |
-| `GET`  | `/api/students/{id}/subscriptions` | List student's subscriptions |
+| `GET`  | `/api/students/{id}/subscriptions` | List student's subscriptions (paginated) |
 | `POST` | `/api/subscriptions/{id}/payments` | Trigger a Pix charge for a billing cycle |
-| `GET`  | `/api/subscriptions/{id}/payments` | List payments for a subscription |
+| `GET`  | `/api/subscriptions/{id}/payments` | List payments for a subscription (paginated) |
 | `POST` | `/api/payments/{id}/mark-paid` | Mark a payment as paid (webhook or manual) |
+
+List endpoints accept `?page=0&size=20` query params and return `{ content, totalElements, totalPages, page, size }`.
 
 ## Running locally
 
@@ -139,11 +144,11 @@ Tests spin up a real Postgres container, run migrations, and hit the full stack 
 
 ## What's next
 
-- [ ] Scheduler: auto-trigger payments when `nextPaymentDate` is reached
+- [x] Scheduler: auto-triggers payments at 08:00 daily when `nextPaymentDate` is reached
+- [x] Pagination on all list endpoints
+- [x] JWT authentication
 - [ ] Real Pix gateway integration (EfiBank / Sicredi APIs)
 - [ ] Webhook receiver to auto-mark payments paid
-- [ ] Pagination on list endpoints
-- [ ] Auth: JWT or session for trainer login
 
 ## Tech
 
