@@ -3,12 +3,12 @@ package app.pixsub.backend.plan.web;
 import app.pixsub.backend.plan.application.CreatePlanService;
 import app.pixsub.backend.plan.application.ListPlansForTrainerService;
 import app.pixsub.backend.plan.domain.Plan;
+import app.pixsub.backend.shared.PageResult;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/plans")
@@ -38,10 +38,13 @@ public class PlanController {
     }
 
     @GetMapping
-    public List<PlanResponse> listByTrainer(@RequestParam("trainerId") Long trainerId) {
-        return listPlansForTrainerService.listByTrainer(trainerId).stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResult<PlanResponse> listByTrainer(
+            @RequestParam("trainerId") Long trainerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResult<Plan> result = listPlansForTrainerService.listByTrainer(trainerId, page, size);
+        return new PageResult<>(result.content().stream().map(this::toResponse).toList(),
+                result.totalElements(), result.totalPages(), result.page(), result.size());
     }
 
     private PlanResponse toResponse(Plan plan) {

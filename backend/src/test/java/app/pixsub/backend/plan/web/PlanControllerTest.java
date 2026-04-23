@@ -1,10 +1,12 @@
 package app.pixsub.backend.plan.web;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.plan.application.CreatePlanService;
 import app.pixsub.backend.plan.application.ListPlansForTrainerService;
 import app.pixsub.backend.plan.domain.Plan;
 import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(PlanController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 class PlanControllerTest {
 
     @Autowired
@@ -143,18 +145,19 @@ class PlanControllerTest {
         Plan p1 = new Plan(1L, trainerId, "Monthly", 10000L, 30, ts1, ts1);
         Plan p2 = new Plan(2L, trainerId, "Yearly", 100000L, 365, ts2, ts2);
 
-        given(listPlansForTrainerService.listByTrainer(trainerId))
-                .willReturn(java.util.List.of(p1, p2));
+        given(listPlansForTrainerService.listByTrainer(trainerId, 0, 20))
+                .willReturn(new PageResult<>(java.util.List.of(p1, p2), 2, 1, 0, 20));
 
         mockMvc.perform(get("/api/plans")
                         .param("trainerId", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Monthly"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("Yearly"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Monthly"))
+                .andExpect(jsonPath("$.content[1].id").value(2))
+                .andExpect(jsonPath("$.content[1].name").value("Yearly"))
+                .andExpect(jsonPath("$.totalElements").value(2));
 
-        verify(listPlansForTrainerService).listByTrainer(eq(trainerId));
+        verify(listPlansForTrainerService).listByTrainer(eq(trainerId), eq(0), eq(20));
     }
 }

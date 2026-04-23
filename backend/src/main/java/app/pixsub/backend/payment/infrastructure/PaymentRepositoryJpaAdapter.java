@@ -2,6 +2,9 @@ package app.pixsub.backend.payment.infrastructure;
 
 import app.pixsub.backend.payment.domain.Payment;
 import app.pixsub.backend.payment.domain.PaymentRepository;
+import app.pixsub.backend.shared.PageResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,5 +36,12 @@ public class PaymentRepositoryJpaAdapter implements PaymentRepository {
                 .stream()
                 .map(PaymentJpaEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public PageResult<Payment> findBySubscriptionId(Long subscriptionId, int page, int size) {
+        Page<PaymentJpaEntity> p = springData.findBySubscriptionId(subscriptionId, PageRequest.of(page, size));
+        return new PageResult<>(p.getContent().stream().map(PaymentJpaEntity::toDomain).toList(),
+                p.getTotalElements(), p.getTotalPages(), page, size);
     }
 }

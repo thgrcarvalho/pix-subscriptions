@@ -5,6 +5,7 @@ import app.pixsub.backend.payment.domain.Payment;
 import app.pixsub.backend.payment.domain.PaymentStatus;
 import app.pixsub.backend.shared.ResourceNotFoundException;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = SubscriptionPaymentController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 public class SubscriptionPaymentControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -43,6 +44,7 @@ public class SubscriptionPaymentControllerTest {
                 due,
                 null,
                 PaymentStatus.PENDING,
+                null,
                 "qr",
                 "copy",
                 "provider-123",

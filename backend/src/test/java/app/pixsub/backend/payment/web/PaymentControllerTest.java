@@ -4,8 +4,10 @@ import app.pixsub.backend.payment.application.ListPaymentsForSubscriptionService
 import app.pixsub.backend.payment.application.MarkPaymentPaidService;
 import app.pixsub.backend.payment.domain.Payment;
 import app.pixsub.backend.payment.domain.PaymentStatus;
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.shared.ResourceNotFoundException;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = PaymentController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 class PaymentControllerTest {
 
     @Autowired
@@ -48,6 +50,7 @@ class PaymentControllerTest {
                 LocalDate.of(2025, 1, 15),
                 Instant.now(),
                 PaymentStatus.PAID,
+                null,
                 "QR",
                 "COPY-PASTE",
                 "PROVIDER-ID",
@@ -95,6 +98,7 @@ class PaymentControllerTest {
                 null,
                 null,
                 null,
+                null,
                 Instant.now().minusSeconds(300),
                 Instant.now().minusSeconds(200)
         );
@@ -108,19 +112,21 @@ class PaymentControllerTest {
                 null,
                 null,
                 null,
+                null,
                 Instant.now().minusSeconds(200),
                 Instant.now().minusSeconds(100)
         );
 
-        given(listPaymentsForSubscriptionService.listBySubscription(5L))
-                .willReturn(List.of(p1, p2));
+        given(listPaymentsForSubscriptionService.listBySubscription(5L, 0, 20))
+                .willReturn(new PageResult<>(List.of(p1, p2), 2, 1, 0, 20));
 
         mockMvc.perform(get("/api/payments")
                         .param("subscriptionId", "5")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id").value(10L))
-                .andExpect(jsonPath("$[1].id").value(11L));
+                .andExpect(jsonPath("$.content", hasSize(2)))
+                .andExpect(jsonPath("$.content[0].id").value(10L))
+                .andExpect(jsonPath("$.content[1].id").value(11L))
+                .andExpect(jsonPath("$.totalElements").value(2));
     }
 }

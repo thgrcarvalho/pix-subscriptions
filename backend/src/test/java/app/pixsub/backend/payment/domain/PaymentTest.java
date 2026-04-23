@@ -51,6 +51,7 @@ class PaymentTest {
                 dueDate,
                 null,
                 PaymentStatus.PENDING,
+                null,
                 "QR",
                 "COPY-PASTE",
                 "PROV-ID",

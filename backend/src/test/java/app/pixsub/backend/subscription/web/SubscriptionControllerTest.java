@@ -1,7 +1,9 @@
 package app.pixsub.backend.subscription.web;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import app.pixsub.backend.subscription.application.CreateSubscriptionService;
 import app.pixsub.backend.subscription.application.ListSubscriptionsForStudentService;
 import app.pixsub.backend.subscription.domain.Subscription;
@@ -31,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SubscriptionController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 class SubscriptionControllerTest {
 
     @Autowired
@@ -137,18 +139,19 @@ class SubscriptionControllerTest {
         Subscription s1 = new Subscription(1L, studentId, 3L, SubscriptionStatus.ACTIVE, np1, ts1, ts1);
         Subscription s2 = new Subscription(2L, studentId, 4L, SubscriptionStatus.CANCELLED, np2, ts2, ts2);
 
-        given(listSubscriptionsForStudentService.listByStudent(studentId))
-                .willReturn(List.of(s1, s2));
+        given(listSubscriptionsForStudentService.listByStudent(studentId, 0, 20))
+                .willReturn(new PageResult<>(List.of(s1, s2), 2, 1, 0, 20));
 
         mockMvc.perform(get("/api/subscriptions")
                         .param("studentId", "7"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].planId").value(3))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].planId").value(4));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].planId").value(3))
+                .andExpect(jsonPath("$.content[1].id").value(2))
+                .andExpect(jsonPath("$.content[1].planId").value(4))
+                .andExpect(jsonPath("$.totalElements").value(2));
 
-        verify(listSubscriptionsForStudentService).listByStudent(eq(studentId));
+        verify(listSubscriptionsForStudentService).listByStudent(eq(studentId), eq(0), eq(20));
     }
 }

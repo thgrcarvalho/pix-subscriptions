@@ -1,6 +1,8 @@
 package app.pixsub.backend.student.web;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import app.pixsub.backend.student.application.CreateStudentService;
 import app.pixsub.backend.student.application.ListStudentsForTrainerService;
 import app.pixsub.backend.student.domain.Student;
@@ -28,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(StudentController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 class StudentControllerTest {
 
     @Autowired
@@ -113,18 +115,19 @@ class StudentControllerTest {
         Student s2 = new Student(2L, trainerId, "Bob", "bob@example.com",
                 StudentStatus.PAUSED, ts2, ts2);
 
-        given(listStudentsForTrainerService.list(trainerId))
-                .willReturn(List.of(s1, s2));
+        given(listStudentsForTrainerService.list(trainerId, 0, 20))
+                .willReturn(new PageResult<>(List.of(s1, s2), 2, 1, 0, 20));
 
         mockMvc.perform(get("/api/students")
                         .param("trainerId", "10"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[0].id").value(1))
-                .andExpect(jsonPath("$[0].name").value("Alice"))
-                .andExpect(jsonPath("$[1].id").value(2))
-                .andExpect(jsonPath("$[1].name").value("Bob"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Alice"))
+                .andExpect(jsonPath("$.content[1].id").value(2))
+                .andExpect(jsonPath("$.content[1].name").value("Bob"))
+                .andExpect(jsonPath("$.totalElements").value(2));
 
-        verify(listStudentsForTrainerService).list(eq(trainerId));
+        verify(listStudentsForTrainerService).list(eq(trainerId), eq(0), eq(20));
     }
 }

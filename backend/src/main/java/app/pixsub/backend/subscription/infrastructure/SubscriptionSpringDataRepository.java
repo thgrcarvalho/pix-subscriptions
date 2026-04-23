@@ -1,5 +1,7 @@
 package app.pixsub.backend.subscription.infrastructure;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -8,6 +10,8 @@ import java.util.List;
 
 public interface SubscriptionSpringDataRepository extends JpaRepository<SubscriptionJpaEntity, Long> {
     List<SubscriptionJpaEntity> findByStudentId(Long studentId);
+
+    Page<SubscriptionJpaEntity> findByStudentId(Long studentId, Pageable pageable);
 
     @Query("SELECT s FROM SubscriptionJpaEntity s WHERE s.status = 'ACTIVE' AND s.nextPaymentDate <= :asOf")
     List<SubscriptionJpaEntity> findDueForBilling(LocalDate asOf);

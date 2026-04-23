@@ -1,7 +1,10 @@
 package app.pixsub.backend.subscription.infrastructure;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.subscription.domain.Subscription;
 import app.pixsub.backend.subscription.domain.SubscriptionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -34,6 +37,13 @@ public class SubscriptionRepositoryJpaAdapter implements SubscriptionRepository 
                 .stream()
                 .map(SubscriptionJpaEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public PageResult<Subscription> findByStudentId(Long studentId, int page, int size) {
+        Page<SubscriptionJpaEntity> p = springData.findByStudentId(studentId, PageRequest.of(page, size));
+        return new PageResult<>(p.getContent().stream().map(SubscriptionJpaEntity::toDomain).toList(),
+                p.getTotalElements(), p.getTotalPages(), page, size);
     }
 
     @Override

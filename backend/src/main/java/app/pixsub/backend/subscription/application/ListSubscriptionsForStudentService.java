@@ -1,10 +1,9 @@
 package app.pixsub.backend.subscription.application;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.subscription.domain.Subscription;
 import app.pixsub.backend.subscription.domain.SubscriptionRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ListSubscriptionsForStudentService {
@@ -14,7 +13,7 @@ public class ListSubscriptionsForStudentService {
         this.subscriptionRepository = subscriptionRepository;
     }
 
-    public List<Subscription> listByStudent(Long studentId) {
-        return subscriptionRepository.findByStudentId(studentId);
+    public PageResult<Subscription> listByStudent(Long studentId, int page, int size) {
+        return subscriptionRepository.findByStudentId(studentId, page, size);
     }
 }

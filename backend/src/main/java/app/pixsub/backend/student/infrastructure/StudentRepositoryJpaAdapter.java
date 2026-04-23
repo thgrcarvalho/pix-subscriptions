@@ -1,7 +1,10 @@
 package app.pixsub.backend.student.infrastructure;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.student.domain.Student;
 import app.pixsub.backend.student.domain.StudentRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,5 +36,12 @@ public class StudentRepositoryJpaAdapter implements StudentRepository {
                 .stream()
                 .map(StudentJpaEntity::toDomain)
                 .toList();
+    }
+
+    @Override
+    public PageResult<Student> findByTrainerId(Long trainerId, int page, int size) {
+        Page<StudentJpaEntity> p = springData.findByTrainerId(trainerId, PageRequest.of(page, size));
+        return new PageResult<>(p.getContent().stream().map(StudentJpaEntity::toDomain).toList(),
+                p.getTotalElements(), p.getTotalPages(), page, size);
     }
 }

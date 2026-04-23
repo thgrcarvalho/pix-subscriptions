@@ -65,6 +65,7 @@ class DefaultCreatePaymentForSubscriptionServiceTest {
 
         given(subscriptionRepository.findById(subscriptionId)).willReturn(Optional.of(subscription));
         given(planRepository.findById(planId)).willReturn(Optional.of(plan));
+        given(subscriptionRepository.save(any(Subscription.class))).willAnswer(i -> i.getArgument(0));
 
         PixCharge charge = new PixCharge("QR_10000", "COPYPASTE_123", "provider-123");
         given(pixGateway.createCharge(eq(10000L), anyString())).willReturn(charge);
@@ -83,6 +84,7 @@ class DefaultCreatePaymentForSubscriptionServiceTest {
                         arg.getDueDate(),
                         arg.getPaidDate(),
                         arg.getStatus(),
+                        arg.getPixProvider(),
                         arg.getPixQrCode(),
                         arg.getPixCopyPaste(),
                         arg.getPixProviderPaymentId(),
@@ -134,6 +136,10 @@ class DefaultCreatePaymentForSubscriptionServiceTest {
         assertEquals("QR_10000", secondSavedArg.getPixQrCode());
         assertEquals("COPYPASTE_123", secondSavedArg.getPixCopyPaste());
         assertEquals("provider-123", secondSavedArg.getPixProviderPaymentId());
+
+        ArgumentCaptor<Subscription> advancedSubCaptor = ArgumentCaptor.forClass(Subscription.class);
+        inOrder.verify(subscriptionRepository).save(advancedSubCaptor.capture());
+        assertEquals(nextPaymentDate.plusDays(plan.getIntervalDays()), advancedSubCaptor.getValue().getNextPaymentDate());
 
         inOrder.verifyNoMoreInteractions();
     }

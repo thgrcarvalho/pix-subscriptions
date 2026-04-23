@@ -1,5 +1,6 @@
 package app.pixsub.backend.student.web;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.student.application.CreateStudentService;
 import app.pixsub.backend.student.application.ListStudentsForTrainerService;
 import app.pixsub.backend.student.domain.Student;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/students")
@@ -37,10 +37,13 @@ public class StudentController {
     }
 
     @GetMapping
-    public List<StudentResponse> listByTrainer(@RequestParam("trainerId") Long trainerId) {
-        return listStudentsForTrainerService.list(trainerId).stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResult<StudentResponse> listByTrainer(
+            @RequestParam("trainerId") Long trainerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResult<Student> result = listStudentsForTrainerService.list(trainerId, page, size);
+        return new PageResult<>(result.content().stream().map(this::toResponse).toList(),
+                result.totalElements(), result.totalPages(), result.page(), result.size());
     }
 
     private StudentResponse toResponse(Student student) {

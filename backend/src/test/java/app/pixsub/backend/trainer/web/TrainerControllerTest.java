@@ -2,6 +2,7 @@ package app.pixsub.backend.trainer.web;
 
 import app.pixsub.backend.shared.error.DomainValidationException;
 import app.pixsub.backend.shared.error.GlobalExceptionHandler;
+import app.pixsub.backend.test.WebMvcTestSecurityConfig;
 import app.pixsub.backend.trainer.application.RegisterTrainerService;
 import app.pixsub.backend.trainer.domain.Trainer;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = TrainerController.class)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, WebMvcTestSecurityConfig.class})
 class TrainerControllerTest {
     @Autowired
     private MockMvc mockMvc;

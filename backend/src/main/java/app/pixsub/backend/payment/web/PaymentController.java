@@ -3,10 +3,9 @@ package app.pixsub.backend.payment.web;
 import app.pixsub.backend.payment.application.ListPaymentsForSubscriptionService;
 import app.pixsub.backend.payment.application.MarkPaymentPaidService;
 import app.pixsub.backend.payment.domain.Payment;
+import app.pixsub.backend.shared.PageResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -21,10 +20,13 @@ public class PaymentController {
     }
 
     @GetMapping
-    public List<PaymentResponse> listBySubscription(@RequestParam("subscriptionId") Long subscriptionId) {
-        return listPaymentsForSubscriptionService.listBySubscription(subscriptionId).stream()
-                .map(this::toResponse)
-                .toList();
+    public PageResult<PaymentResponse> listBySubscription(
+            @RequestParam("subscriptionId") Long subscriptionId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        PageResult<Payment> result = listPaymentsForSubscriptionService.listBySubscription(subscriptionId, page, size);
+        return new PageResult<>(result.content().stream().map(this::toResponse).toList(),
+                result.totalElements(), result.totalPages(), result.page(), result.size());
     }
 
     @PostMapping("/{paymentId}/pay")

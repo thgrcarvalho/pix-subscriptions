@@ -1,10 +1,9 @@
 package app.pixsub.backend.student.application;
 
+import app.pixsub.backend.shared.PageResult;
 import app.pixsub.backend.student.domain.Student;
 import app.pixsub.backend.student.domain.StudentRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ListStudentsForTrainerService {
@@ -14,7 +13,7 @@ public class ListStudentsForTrainerService {
         this.studentRepository = studentRepository;
     }
 
-    public List<Student> list(Long trainerId) {
-        return studentRepository.findByTrainerId(trainerId);
+    public PageResult<Student> list(Long trainerId, int page, int size) {
+        return studentRepository.findByTrainerId(trainerId, page, size);
     }
 }
