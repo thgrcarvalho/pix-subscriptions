@@ -1,5 +1,7 @@
 # pix-subscriptions
 
+[![CI](https://github.com/thgrcarvalho/pix-subscriptions/actions/workflows/ci.yml/badge.svg)](https://github.com/thgrcarvalho/pix-subscriptions/actions/workflows/ci.yml)
+
 A Spring Boot backend for Pix-based recurring billing. Trainers define plans, enroll students into subscriptions, and trigger monthly Pix charges that students pay via QR code or copy-paste. Each billing cycle produces a Payment record with the Pix QR code and copy-paste string ready to send to the student.
 
 Built to explore a realistic payment domain in Java — not a toy CRUD app, but a system where correctness matters: duplicate charges are bad, partial writes are bad, and the domain model has to enforce its own invariants.
