@@ -114,24 +114,32 @@ List endpoints accept `?page=0&size=20` query params and return `{ content, tota
 
 ## Running locally
 
-Requires Docker for PostgreSQL.
+### With Docker Compose (recommended)
+
+```bash
+docker compose up
+```
+
+The app starts at `http://localhost:8080`. Postgres is started automatically and Flyway runs migrations on first boot. Set `JWT_SECRET` in the compose file or via environment variable before using in production.
+
+### Without Docker
 
 ```bash
 # Start Postgres
-docker run -d \
-  --name pix-sub-db \
-  -e POSTGRES_DB=pixsub \
-  -e POSTGRES_USER=pixsub \
-  -e POSTGRES_PASSWORD=pixsub \
-  -p 5432:5432 \
-  postgres:16
+docker run -d --name pix-sub-db \
+  -e POSTGRES_DB=pixsub -e POSTGRES_USER=pixsub -e POSTGRES_PASSWORD=pixsub \
+  -p 5432:5432 postgres:16
 
-# Run the app
-cd backend
-./gradlew bootRun
+cd backend && ./gradlew bootRun
 ```
 
-Flyway runs migrations automatically on startup. The app listens on `http://localhost:8080`.
+### API documentation
+
+Once running, the interactive API docs are at:
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- OpenAPI spec: `http://localhost:8080/v3/api-docs`
+
+All secured endpoints require a Bearer token. Use `POST /api/auth/login` first to obtain one, then click **Authorize** in the Swagger UI.
 
 ## Testing
 
