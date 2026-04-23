@@ -2,13 +2,13 @@ package app.pixsub.backend.payment.infrastructure.pix;
 
 import app.pixsub.backend.payment.application.PixCharge;
 import app.pixsub.backend.payment.application.PixGateway;
-import org.springframework.context.annotation.Primary;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-@Primary // so the app runs without choosing a real provider yet
+@ConditionalOnProperty(name = "pixsub.pix.provider", havingValue = "fake", matchIfMissing = true)
 public class FakePixGateway implements PixGateway {
     @Override
     public String provider() {

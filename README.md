@@ -92,7 +92,7 @@ Subscriptions track `nextPaymentDate` so a future scheduler knows which ones to 
 
 ## API
 
-All endpoints except `/api/auth/login` and `/api/trainers/register` require a `Bearer` token in the `Authorization` header.
+All endpoints except `/api/auth/login`, `/api/trainers/register`, and `/api/webhooks/**` require a `Bearer` token in the `Authorization` header.
 
 | Method | Path | What it does |
 |--------|------|-------------|
@@ -147,8 +147,8 @@ Tests spin up a real Postgres container, run migrations, and hit the full stack 
 - [x] Scheduler: auto-triggers payments at 08:00 daily when `nextPaymentDate` is reached
 - [x] Pagination on all list endpoints
 - [x] JWT authentication
-- [ ] Real Pix gateway integration (EfiBank / Sicredi APIs)
-- [ ] Webhook receiver to auto-mark payments paid
+- [x] EfiBank `PixGateway` adapter — activate with `pixsub.pix.provider=efibank` + credentials
+- [x] Webhook receiver — `POST /api/webhooks/pix/efibank` (EfiBank format) and `POST /api/webhooks/pix` (generic)
 
 ## Tech
 

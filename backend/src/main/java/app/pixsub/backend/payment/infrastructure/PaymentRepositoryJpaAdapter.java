@@ -44,4 +44,9 @@ public class PaymentRepositoryJpaAdapter implements PaymentRepository {
         return new PageResult<>(p.getContent().stream().map(PaymentJpaEntity::toDomain).toList(),
                 p.getTotalElements(), p.getTotalPages(), page, size);
     }
+
+    @Override
+    public Optional<Payment> findByPixProviderPaymentId(String providerPaymentId) {
+        return springData.findByPixProviderPaymentId(providerPaymentId).map(PaymentJpaEntity::toDomain);
+    }
 }

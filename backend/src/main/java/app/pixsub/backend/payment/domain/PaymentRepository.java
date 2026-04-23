@@ -13,4 +13,6 @@ public interface PaymentRepository {
     List<Payment> findBySubscriptionId(Long subscriptionId);
 
     PageResult<Payment> findBySubscriptionId(Long subscriptionId, int page, int size);
+
+    Optional<Payment> findByPixProviderPaymentId(String providerPaymentId);
 }
