@@ -3,6 +3,7 @@ package app.pixsub.backend.payment.application;
 import app.pixsub.backend.payment.domain.Payment;
 import app.pixsub.backend.payment.domain.PaymentRepository;
 import app.pixsub.backend.payment.domain.PaymentStatus;
+import app.pixsub.backend.shared.AuditLogger;
 import app.pixsub.backend.shared.ResourceNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +24,9 @@ import static org.mockito.Mockito.*;
 class MarkPaymentPaidServiceTest {
     @Mock
     private PaymentRepository paymentRepository;
+
+    @Mock
+    private AuditLogger auditLogger;
 
     @InjectMocks
     private MarkPaymentPaidService service;

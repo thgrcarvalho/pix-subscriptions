@@ -13,6 +13,13 @@ services:
       timeout: 5s
       retries: 5
 
+  # Optional: Jaeger for distributed tracing (comment out if not needed locally)
+  jaeger:
+    image: jaegertracing/all-in-one:1.56
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "4318:4318"    # OTLP HTTP endpoint
+
   app:
     build: ./backend
     ports:
@@ -22,6 +29,7 @@ services:
       SPRING_DATASOURCE_USERNAME: pixsub
       SPRING_DATASOURCE_PASSWORD: pixsub
       JWT_SECRET: change-this-secret-in-production-must-be-at-least-32-chars
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     depends_on:
       postgres:
         condition: service_healthy

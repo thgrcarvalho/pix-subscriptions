@@ -2,6 +2,7 @@ package app.pixsub.backend.trainer.web;
 
 import app.pixsub.backend.trainer.application.RegisterTrainerService;
 import app.pixsub.backend.trainer.domain.Trainer;
+import io.github.thgrcarvalho.ratelimit.RateLimit;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,7 @@ public class TrainerController {
     }
 
     @PostMapping("/register")
+    @RateLimit(requests = 5, window = "1m", keyStrategy = RateLimit.KeyStrategy.IP_AND_PATH)
     public ResponseEntity<TrainerResponse> register(@Valid @RequestBody TrainerRegistrationRequest request) {
         Trainer trainer = registerTrainerService.register(
                 request.getEmail(),
