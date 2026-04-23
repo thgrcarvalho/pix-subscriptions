@@ -57,4 +57,16 @@ public class Subscription {
                 Instant.now()
         );
     }
+
+    public Subscription advanceNextPaymentDate(int days) {
+        return new Subscription(
+                id,
+                studentId,
+                planId,
+                status,
+                nextPaymentDate.plusDays(days),
+                createdAt,
+                Instant.now()
+        );
+    }
 }

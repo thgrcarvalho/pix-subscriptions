@@ -4,6 +4,7 @@ import app.pixsub.backend.subscription.domain.Subscription;
 import app.pixsub.backend.subscription.domain.SubscriptionRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,14 @@ public class SubscriptionRepositoryJpaAdapter implements SubscriptionRepository 
     @Override
     public List<Subscription> findByStudentId(Long studentId) {
         return springData.findByStudentId(studentId)
+                .stream()
+                .map(SubscriptionJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Subscription> findDueForBilling(LocalDate asOf) {
+        return springData.findDueForBilling(asOf)
                 .stream()
                 .map(SubscriptionJpaEntity::toDomain)
                 .toList();
